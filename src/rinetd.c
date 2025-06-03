@@ -157,7 +157,7 @@ int main(int argc, char *argv[])
 		exit(1);
 	}
 #else
-	openlog("rinetd", LOG_PID, LOG_DAEMON);
+	openlog("rin", LOG_PID, LOG_DAEMON);
 #endif
 
 	readArgs(argc, argv, &options);
@@ -214,7 +214,7 @@ void logError(char const *fmt, ...)
 	else
 #endif
 	{
-		fprintf(stderr, "rinetd error: ");
+		fprintf(stderr, "rin error: ");
 		vfprintf(stderr, fmt, ap);
 	}
 	va_end(ap);
@@ -230,7 +230,7 @@ void logInfo(char const *fmt, ...)
 	else
 #endif
 	{
-		fprintf(stderr, "rinetd: ");
+		fprintf(stderr, "rin: ");
 		vfprintf(stderr, fmt, ap);
 	}
 	va_end(ap);
@@ -604,7 +604,7 @@ static void handleUdpRead(ConnectionInfo *cnx, char const *buffer, int bytes)
 static void handleWrite(ConnectionInfo *cnx, Socket *socket, Socket *other_socket)
 {
 	if (cnx->coClosing && (socket->sentPos == other_socket->recvPos)) {
-		PERROR("rinetd: local closed and no more output");
+		PERROR("rin: local closed and no more output");
 		logEvent(cnx, cnx->server, cnx->coLog);
 		if (socket->protocol == IPPROTO_TCP)
 			closesocket(socket->fd);
@@ -791,7 +791,7 @@ static void handleAccept(ServerInfo const *srv)
 		if ((GetLastError() != WSAEINPROGRESS) &&
 			(GetLastError() != WSAEWOULDBLOCK))
 		{
-			PERROR("rinetd: connect");
+			PERROR("rin: connect");
 			closesocket(cnx->local.fd);
 			if (cnx->remote.protocol == IPPROTO_TCP)
 				closesocket(cnx->remote.fd);
@@ -999,7 +999,7 @@ static void logEvent(ConnectionInfo const *cnx, ServerInfo const *srv, int resul
 				referrer, and server name information. */
 			fprintf(logFile, "%s - - "
 				"[%s %c%.2d%.2d] "
-				"\"GET /rinetd-services/%s/%d/%s/%d/%s HTTP/1.0\" "
+				"\"GET /rin/%s/%d/%s/%d/%s HTTP/1.0\" "
 				"200 %llu - - - %llu\n",
 				addressText,
 				tstr,
@@ -1048,7 +1048,7 @@ static int readArgs (int argc, char **argv, RinetdOptions *options)
 				options->conf_file = optarg;
 				if (!options->conf_file) {
 					fprintf(stderr, "Not enough memory to "
-						"launch rinetd.\n");
+						"launch rin.\n");
 					exit(1);
 				}
 				break;
@@ -1056,7 +1056,7 @@ static int readArgs (int argc, char **argv, RinetdOptions *options)
 				options->foreground = 1;
 				break;
 			case 'h':
-				printf("Usage: rinetd [OPTION]\n"
+				printf("Usage: rin [OPTION]\n"
 					"  -c, --conf-file FILE   read configuration "
 					"from FILE\n"
 					"  -f, --foreground       do not run in the "
@@ -1065,11 +1065,11 @@ static int readArgs (int argc, char **argv, RinetdOptions *options)
 					"  -v, --version          display version "
 					"number\n\n");
 				printf("Most options are controlled through the\n"
-					"configuration file. See the rinetd(8)\n"
+					"configuration file. See the rin(8)\n"
 					"manpage for more information.\n");
 				exit (0);
 			case 'v':
-				printf ("rinetd %s\n", PACKAGE_VERSION);
+				printf ("rin %s\n", PACKAGE_VERSION);
 				exit (0);
 			case '?':
 			default:
